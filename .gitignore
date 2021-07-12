@@ -1,0 +1,23 @@
+
+# Web app
+/neuralnetworkwebapp/
+
+# Data sets and model data
+data/
+tests/
+
+# Visual Studio 2015/2017 cache/options directory
+.vs/
+
+# Python Tools for Visual Studio (PTVS)
+__pycache__/
+*.pyc
+
+# Pytest
+.pytest_cache/
+
+#Virtual environment
+/env/
+
+#Package distribution
+machinelearningpython.egg-info/

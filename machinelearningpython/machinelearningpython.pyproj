@@ -1,0 +1,121 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>d4f0ed68-a67b-46e2-85c7-59ea0e607ecd</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>src\moontest2d.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>machinelearningpython</Name>
+    <RootNamespace>machinelearningpython</RootNamespace>
+    <TestFramework>Pytest</TestFramework>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="setup.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython.py" />
+    <Compile Include="src\machinelearningpython\evaluate\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\evaluate\classifier.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\neuralnetwork\modelselection.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\neuralnetwork\network.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\unused\unimplementedshit.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\neuralnetwork\_functions.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\neuralnetwork\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\unused\dataprocessing.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\neuralnetwork\_stochasticoptimisers.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\utilities\preprocessing.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\utilities\helpers.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\utilities\split.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\utilities\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\machinelearningpython\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\debugging.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\moontest2d.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\nettest.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\unit_tests\conftest.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\unit_tests\htest_dataprocessing.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\unit_tests\htest_dataset.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\unit_tests\test_network.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\unit_tests\test__functions.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="data\models\" />
+    <Folder Include="src\machinelearningpython\" />
+    <Folder Include="src\machinelearningpython\evaluate\" />
+    <Folder Include="src\machinelearningpython\neuralnetwork\" />
+    <Folder Include="src\machinelearningpython\unused\" />
+    <Folder Include="src\machinelearningpython\utilities\" />
+    <Folder Include="data\" />
+    <Folder Include="src\" />
+    <Folder Include="tests\" />
+    <Folder Include="tests\unit_tests\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.md" />
+    <Content Include="setup.cfg" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>
