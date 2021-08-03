@@ -1,5 +1,5 @@
 import numpy as np
-import math
+from math import floor, ceil
 from ._functions import COST_FUNCTIONS, COST_FUNCTION_SELECTION, REGULARISATION_COST_FUNCTIONS
 
 DEFAULT_SGD_OPTIMISER_PARAMETERS = {'mini_batch_size': 10,
@@ -18,6 +18,12 @@ DEFAULT_NAG_OPTIMISER_PARAMETERS = {'mini_batch_size': 10,
                                     'learning_rate_decay_factor': 1,
                                     'learning_rate_decay_delay': 0,
                                     'learning_rate_decay_rate': 5}
+
+def print_cost_update(network, inputs, targets, training_parameters, current_epoch):
+    outputs = network.feedforward(inputs)
+    cost = COST_FUNCTIONS[COST_FUNCTION_SELECTION[network.layers[-1].output_function]](outputs, targets)
+    reg_cost = REGULARISATION_COST_FUNCTIONS['l2'](network, training_parameters['l2_param'], targets)
+    print(f'Epoch: {current_epoch:>6}  --    Cost = {cost:<18.15f}    Regularisation Cost = {reg_cost:<18.15f}    Total Cost = {cost + reg_cost:<18.15f}')
 
 
 def stochastic_gradient_descent(network, inputs, targets, training_parameters, optimiser_parameters):
@@ -49,11 +55,11 @@ def stochastic_gradient_descent(network, inputs, targets, training_parameters, o
 
         # Compute learning rate based on annealing schedule:
         if  optimiser_parameters['learning_rate_decay_factor'] != 1 and ii > optimiser_parameters['learning_rate_decay_delay']:
-            annealing_factor = optimiser_parameters['learning_rate_decay_factor'] ** math.floor((ii - optimiser_parameters['learning_rate_decay_delay'])/optimiser_parameters['learning_rate_decay_rate'])
+            annealing_factor = optimiser_parameters['learning_rate_decay_factor'] ** floor((ii - optimiser_parameters['learning_rate_decay_delay'])/optimiser_parameters['learning_rate_decay_rate'])
             learning_rate = optimiser_parameters['learning_rate'] * annealing_factor
 
         # Loop through each mini-batch in the current epoch
-        for jj in range(0, math.ceil(sample_size/optimiser_parameters['mini_batch_size'])):            
+        for jj in range(0, ceil(sample_size/optimiser_parameters['mini_batch_size'])):            
             mini_batch_index = np.s_[optimiser_parameters['mini_batch_size'] * jj : min(optimiser_parameters['mini_batch_size'] * (jj + 1), sample_size)]
 
             # Compute gradients
@@ -74,20 +80,13 @@ def stochastic_gradient_descent(network, inputs, targets, training_parameters, o
             network.update_weights(weights, biases)
 
         # If verbose, check cost and print summary at the end of each epoch
-        if optimiser_parameters['verbose'] and ii % (math.floor(optimiser_parameters['epochs']/10)) == 0:
-            outputs = network.feedforward(inputs)
-            cost = COST_FUNCTIONS[COST_FUNCTION_SELECTION[network.layers[-1].output_function]](outputs, targets)
-            reg_cost = REGULARISATION_COST_FUNCTIONS['l2'](network, training_parameters['l2_param'], targets)
-            print(f'Epoch: {ii:>6}  --    Cost = {cost:<17.15f}    Regularisation Cost = {reg_cost:<17.15f}    Total Cost = {cost + reg_cost:<17.15f}')
+        if optimiser_parameters['verbose'] and ii % (floor(optimiser_parameters['epochs']/10)) == 0:
+            print_cost_update(network, inputs, targets, training_parameters, ii)
 
-    # If not verbose, check cost and print summary at the end of the optimisation process
-    if not optimiser_parameters['verbose']:
-        outputs = network.feedforward(inputs)
-        cost = COST_FUNCTIONS[COST_FUNCTION_SELECTION[network.layers[-1].output_function]](outputs, targets)
-        reg_cost = REGULARISATION_COST_FUNCTIONS['l2'](network, training_parameters['l2_param'], targets)
-        print(f'Final Result    --    Cost = {cost}    Regularisation Cost = {reg_cost}    Total Cost = {cost + reg_cost}')
+    # Check final cost and print summary at the end of the optimisation process
+    if optimiser_parameters['verbose']:
+        print_cost_update(network, inputs, targets, training_parameters, optimiser_parameters['epochs'])
 
-    return network
 
 
 def nesterov_accelerated_gradient(network, inputs, targets, training_parameters, optimiser_parameters):
@@ -125,11 +124,11 @@ def nesterov_accelerated_gradient(network, inputs, targets, training_parameters,
 
         # Compute learning rate based on annealing schedule:
         if  optimiser_parameters['learning_rate_decay_factor'] != 1 and ii > optimiser_parameters['learning_rate_decay_delay']:
-            annealing_factor = optimiser_parameters['learning_rate_decay_factor'] ** math.floor((ii - optimiser_parameters['learning_rate_decay_delay'])/optimiser_parameters['learning_rate_decay_rate'])
+            annealing_factor = optimiser_parameters['learning_rate_decay_factor'] ** floor((ii - optimiser_parameters['learning_rate_decay_delay'])/optimiser_parameters['learning_rate_decay_rate'])
             learning_rate = optimiser_parameters['learning_rate'] * annealing_factor
 
         # Loop through each mini-batch in the current epoch
-        for jj in range(0, math.ceil(sample_size/optimiser_parameters['mini_batch_size'])):
+        for jj in range(0, ceil(sample_size/optimiser_parameters['mini_batch_size'])):
             mini_batch_index = np.s_[optimiser_parameters['mini_batch_size'] * jj : min(optimiser_parameters['mini_batch_size'] * (jj + 1), sample_size)]
 
             # Compute gradients
@@ -157,20 +156,13 @@ def nesterov_accelerated_gradient(network, inputs, targets, training_parameters,
             network.update_weights(weights, biases)
 
         # If verbose, check cost and print summary at the end of each epoch
-        if optimiser_parameters['verbose'] and ii % (math.floor(optimiser_parameters['epochs']/10)) == 0:
-            outputs = network.feedforward(inputs)
-            cost = COST_FUNCTIONS[COST_FUNCTION_SELECTION[network.layers[-1].output_function]](outputs, targets)
-            reg_cost = REGULARISATION_COST_FUNCTIONS['l2'](network, training_parameters['l2_param'], targets)
-            print(f'Epoch: {ii:>6}  --    Cost = {cost:<17.15f}    Regularisation Cost = {reg_cost:<17.15f}    Total Cost = {cost + reg_cost:<17.15f}')
+        if optimiser_parameters['verbose'] and ii % (floor(optimiser_parameters['epochs']/10)) == 0:
+            print_cost_update(network, inputs, targets, training_parameters, ii)
 
-    # If not verbose, check cost and print summary at the end of the optimisation process
-    if not optimiser_parameters['verbose']:
-        outputs = network.feedforward(inputs)
-        cost = COST_FUNCTIONS[COST_FUNCTION_SELECTION[network.layers[-1].output_function]](outputs, targets)
-        reg_cost = REGULARISATION_COST_FUNCTIONS['l2'](network, training_parameters['l2_param'], targets)
-        print(f'Final Result    --    Cost = {cost}    Regularisation Cost = {reg_cost}    Total Cost = {cost + reg_cost}')
+    # Check final cost and print summary at the end of the optimisation process
+    if optimiser_parameters['verbose']:
+        print_cost_update(network, inputs, targets, training_parameters, optimiser_parameters['epochs'])
 
-    return network
 
 
 def adam(network):

@@ -247,7 +247,7 @@ def plot_2d_decision_boundary(network, inputs, targets, boundary = 0.5):
 
     # Predict the function value for the whole grid
     model_outputs = network.feedforward(np.stack((xx.ravel(), yy.ravel()), 1))
-    model_outputs = model_outputs[:,0].reshape(xx.shape)
+    model_outputs = model_outputs.reshape(xx.shape)
     predicted_classes = model_outputs > boundary
     levels = np.array([boundary])
 
@@ -255,7 +255,7 @@ def plot_2d_decision_boundary(network, inputs, targets, boundary = 0.5):
     fig, ax = plt.subplots()
     #plt.contour(xx, yy, predicted_classes, 1, colors='black', linestyles='dashed')
     plt.contourf(xx, yy, predicted_classes, 1, cmap=plt.cm.RdBu, alpha=0.8, extend='both')
-    plt.scatter(inputs[:,0], inputs[:,1], c=targets[:,0], cmap=plt.cm.RdBu)
+    plt.scatter(inputs[:,0], inputs[:,1], c=targets, cmap=plt.cm.RdBu)
     ax.set_xlim(0.5*ceil(xx.min()/0.5), 0.5*floor(xx.max()/0.5))
     ax.set_ylim(0.5*ceil(yy.min()/0.5), 0.5*floor(yy.max()/0.5))
     plt.title(f'Threshold: {boundary}')

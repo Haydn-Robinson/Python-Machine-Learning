@@ -57,7 +57,7 @@ class Network:
 
         Inititialise a network 
 
-            networkStructure, a tuple of the form (ni,nh1,...,nhm,no) where
+            network_structure, a tuple of the form (ni,nh1,...,nhm,no) where
                 - ni is the number of neurons in the input layer
                 - nh1 is the number of neurons in the first hidden layer
                 - nhm is the number of neurons in the mth hidden layer
@@ -66,18 +66,11 @@ class Network:
             hiddenLayerFunction, a string specifying the desired type of neuron to use in the hidden layer, options are
                 - sigmoid, tanh, ReLu
 
-            outputFunction, a string specifying the desired type of neuron to use in the output layer, options are
-                - sigmoid, tanh, ReLu
+            output_function, a string specifying the desired type of neuron to use in the output layer, options are
+                - sigmoid, softmax
 
         """
      
-
-        self._new_network(network_structure, hidden_layer_function, output_function)
-       
-       
-
-    # Method to initialise new network
-    def _new_network(self, network_structure, hidden_layer_function, output_function):
 
         # Get network dimensions
         self.input_count = network_structure[0]
@@ -95,25 +88,15 @@ class Network:
         self.cost_function = COST_FUNCTION_SELECTION[output_function]
 
 
-    # Method to load network from file
-    def load_from_file(self, load_directory):
-
-        self.layers = []
-        for layer_data in load_directory.iterdir():
-            self.layers.append(Layer(layer_data))
-                
-        self.input_count = self.layers[0].weights.shape[1]
-        self.output_count = self.layers[-1].weights.shape[0]            
-        self.layer_count = len(self.layers)
-
-        # Select cost function to match output function:
-        self.cost_function = COST_FUNCTION_SELECTION[self.layers[-1].output_function]
-
-
     # Method to feedforward an input through the network   
-    def feedforward(self, input):
+    def feedforward(self, input, force_2d=False):
+        """
+        feedforward(self, inputs)
 
-        # Check input dimensions
+        Perform feedforward computation and return the model output
+        """
+
+        # Check input dimensions and reshape to a row matrix if necessary
         if input.ndim == 1 and input.size == self.input_count:
            layer_output = input.reshape(1, input.size)
         elif input.ndim == 2 and input.shape[1] == self.input_count:
@@ -128,7 +111,7 @@ class Network:
         # Return correct output shape
         if layer_output.ndim == 1:
             return layer_output
-        elif layer_output.ndim == 2 and layer_output.shape[0] == 1:
+        elif layer_output.ndim == 2 and layer_output.shape[0] == 1 and not force_2d:
             return layer_output.flatten()
         else:
             return layer_output.transpose()
@@ -237,8 +220,7 @@ class Network:
                 training_parameters[parameter] = default_training_parameters[parameter]
 
         # train network
-        trained_network = OPTIMISERS[training_parameters['optimiser']](self, inputs, targets, training_parameters, optimiser_parameters)
-        self.layers = trained_network.layers
+        OPTIMISERS[training_parameters['optimiser']](self, inputs, targets, training_parameters, optimiser_parameters)
 
 
 # save network to file

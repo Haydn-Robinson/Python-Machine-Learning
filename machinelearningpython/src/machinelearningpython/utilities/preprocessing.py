@@ -3,22 +3,24 @@ import pandas as pd
 from math import floor
 
 # Splits pandas dataframe into two numpy arrays of input and target data
-def dataframe_to_inputs_targets(dataframe, input_column_indexes, target_column_indexes=-1):
+def dataframe_to_inputs_targets(dataframe, input_count, target_count=1, input_start=0):
     """
     dataframe_to_inputs_targets(dataframe, input_column_indexes, target_column_indexes=-1)
 
     arguments:  dataframe               - pandas dataframe containing all data
-                input_column_indexes    - tuple of (start, end) integer column indexes for input data
-                target_column_indexes   - tuple of (start, end) integer column indexes for target data, if left blank assumes only last column
+                input_count             - The number of input variables (integer)
+                target_count            - The number of target variables (integer - defaults to 1)
+                input_start             - Starting index of the input variables (integer - defaults to 0)
 
     returns: inputs, targets
     """
 
-    input_slice = np.s_[:,input_column_indexes[0]:input_column_indexes[1]]
-    if isinstance(target_column_indexes, int):
-        target_slice =  np.s_[:,target_column_indexes]
+    input_slice = np.s_[:, input_start:input_count]
+    
+    if target_count == 1:
+        target_slice =  np.s_[:,input_count]
     else:
-        target_slice = np.s_[:,target_column_indexes[0]:target_column_indexes[1]]
+        target_slice = np.s_[:,input_count:]
 
     return dataframe.iloc[input_slice].to_numpy(copy=True), dataframe.iloc[target_slice].to_numpy(copy=True)
 

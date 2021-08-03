@@ -66,13 +66,27 @@ def mean_square_error(model_output, target):
 def binary_cross_entropy(model_output, target):
     """ Compute binary cross-entropy cost """
 
+    if model_output.shape != target.shape:
+        raise ValueError('Dimensions of model output and target do not match')
+
+    # Limit the model output to the interval (0,1) to prevent divide by zero
+    eps = np.finfo(model_output.dtype).eps
+    model_output = np.clip(model_output, eps, 1- eps)
+
     return -np.sum(target * np.log(model_output) + (1 - target)*np.log(1 - model_output))/model_output.shape[0]
 
 
 def cross_entropy(model_output, target):
     """ Compute cross-entropy cost """
+
+    if model_output.shape != target.shape:
+        raise ValueError('Dimensions of model output and target do not match')
     
-    return -(1/model_output.shape[0]) * np.sum(target * np.log(model_output))
+    # Limit the model output to the interval (0,1) to prevent divide by zero
+    eps = np.finfo(model_output.dtype).eps
+    model_output = np.clip(model_output, eps, 1- eps)
+
+    return -np.sum(target * np.log(model_output))/model_output.shape[0]
 
 
 COST_FUNCTIONS = {'mse': mean_square_error, 'binary_cross_entropy': binary_cross_entropy, 'cross_entropy':cross_entropy}

@@ -12,6 +12,12 @@ def stratified_split(targets, test_proportion = 0.2):
     
     """
 
+    # if binary classification extend target vector to include negative class
+    if targets.ndim == 1:
+        targets = np.stack((targets, 1-targets), axis=1)
+    elif targets.shape[1] == 1:
+        targets = np.concatenate((targets, 1-targets), axis=1)
+
     training_proportion = 1 - test_proportion   
     training_indicies = np.array([], dtype=np.int32)
     test_indicies = np.array([], dtype=np.int32)
@@ -34,6 +40,13 @@ def get_stratified_k_folds(targets, fold_count):
     Function to get k stratified folds for k-fold cross validation
     
     """
+
+    # if binary classification extend target vector to include negative class
+    if targets.ndim == 1:
+        targets = np.stack((targets, 1-targets), axis=1)
+    elif targets.shape[1] == 1:
+        targets = np.concatenate((targets, 1-targets), axis=1)
+
     # Get number of samples in each class
     class_counts = np.sum(targets, axis=0)
 
