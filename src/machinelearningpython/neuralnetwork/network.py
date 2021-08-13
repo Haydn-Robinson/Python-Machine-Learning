@@ -5,9 +5,8 @@ import pathlib
 import itertools as it
 import csv
 from math import sqrt
-from ._functions import ACTIVATIONS, ACTIVATIONS_DERIVATIVES, COST_FUNCTIONS, COST_FUNCTION_DERIVATIVES, COST_FUNCTION_SELECTION, REGULARISATION_COST_FUNCTION_DERIVATIVES
+from ._functions import ACTIVATIONS, ACTIVATIONS_DERIVATIVES, COST_FUNCTIONS,  COST_FUNCTION_SELECTION
 from ._stochasticoptimisers import OPTIMISERS
-from ..utilities.helpers import check_1d_array
 
 
 # Exception for wrong number of arguments
@@ -98,7 +97,7 @@ class Network:
 
         # Check input dimensions and reshape to a row matrix if necessary
         if input.ndim == 1 and input.size == self.input_count:
-           layer_output = input.reshape(1, input.size)
+           layer_output = input.reshape(input.size,  1)
         elif input.ndim == 2 and input.shape[1] == self.input_count:
             layer_output = input.transpose()
         else:

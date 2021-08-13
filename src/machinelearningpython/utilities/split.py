@@ -1,6 +1,10 @@
 import numpy as np
 from math import floor
 
+# Exception for wrong number of arguments
+class DataSetError(ValueError):
+    pass
+
 
 # perform simple stratified test/train split
 def stratified_split(targets, test_proportion = 0.2):
@@ -8,7 +12,7 @@ def stratified_split(targets, test_proportion = 0.2):
     """ 
     stratified_split(targets, test_proportion = 0.2)
 
-    Function to get stratified test and train data sets for classification
+    Function to get stratified test and train data sets for classification from a one-hot encoded target vector
     
     """
 
@@ -23,6 +27,8 @@ def stratified_split(targets, test_proportion = 0.2):
     test_indicies = np.array([], dtype=np.int32)
     for ii in range(0, targets.shape[1]):
         class_indicies = np.arange(0, targets.shape[0])[targets[:, ii] == 1]
+        if class_indicies.size < 2:
+            raise DataSetError(f"The dataset can't be split. The supplied dataset has less than 2 examples for the class at index {ii}.")
         training_indicies = np.concatenate((training_indicies, class_indicies[0:floor(training_proportion*class_indicies.size)]))
         test_indicies = np.concatenate((test_indicies, class_indicies[floor(training_proportion*class_indicies.size):]))
 
@@ -37,7 +43,7 @@ def get_stratified_k_folds(targets, fold_count):
     """ 
     get_stratified_k_folds(targets, fold_count)
 
-    Function to get k stratified folds for k-fold cross validation
+    Function to get k stratified folds for k-fold cross validation from a one-hot encoded target vector
     
     """
 
@@ -57,6 +63,8 @@ def get_stratified_k_folds(targets, fold_count):
     
     for ii in range(0, targets.shape[1]):
         class_indicies = np.arange(0, targets.shape[0])[targets[:, ii] == 1]
+        if class_indicies.size < fold_count:
+            raise DataSetError(f"The data set can't be split into {fold_count} folds. The supplied data set only has {class_indicies.size} examples for the class at index {ii}.")
         current_index = 0
         fold_index = 0
         

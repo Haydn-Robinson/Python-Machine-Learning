@@ -161,7 +161,7 @@ def cross_validation(inputs, targets, network_parameters, training_parameters, o
 
         # Evaluate classifier
         test_model_outputs = network.feedforward(preprocessed_test_inputs)
-        scores[ii] = evcls.auroc(test_model_outputs, test_targets)
+        scores[ii] = evcls.vuroc_hand_till(test_model_outputs, test_targets)
         ii += 1
 
     print(f'\n----- Cross validation Summary -----\nScores:\t\t\t{scores}\nMean:\t\t\t{np.mean(scores)}\nStandard Deviation:\t{np.std(scores)}\n')

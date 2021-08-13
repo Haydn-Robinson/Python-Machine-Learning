@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LinearLocator
-from math import inf, ceil, floor
-from ..utilities.helpers import check_1d_array, trapezoid_area
+from math import inf, ceil, floor, comb
+from ..utilities.helpers import cast_to_1d_array, trapezoid_area
 
 matplotlib.rcParams['mathtext.fontset'] = 'cm'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
@@ -61,11 +61,11 @@ def get_accuracy(confusion_matrix):
     return (confusion_matrix[1,1] + confusion_matrix[0,0])/np.sum(confusion_matrix)
 
 
-def roc_curve(model_outputs, targets, plot=True):
+def binary_roc_curve(model_outputs, targets):
 
     # check input dimensions
-    model_outputs = check_1d_array(model_outputs)
-    targets = check_1d_array(targets)
+    model_outputs = cast_to_1d_array(model_outputs)
+    targets = cast_to_1d_array(targets)
 
     # Get the number of instances in each class
     classes, class_counts = np.unique(targets, return_counts=True)
@@ -108,26 +108,49 @@ def roc_curve(model_outputs, targets, plot=True):
     false_positive_rates.append(false_positives/negatives_count)
     accuracies.append((true_positives + (negatives_count - false_positives))/model_outputs.size)
 
-    # Plot ROC curve
-    if plot:
-        fig, ax = plt.subplots()
-        ax.plot(false_positive_rates, true_positive_rates)
-        ax.plot([0,1], [0,1], 'k--')
-        ax.set_xlabel('False Positive rate')
-        ax.set_ylabel('True Positive rate')
-        ax.set_title('ROC Curve')
-        plt.minorticks_on()
-        plt.grid(b=True, which='major')
-        plt.grid(b=True, which='minor', linestyle='--')
-
-    return true_positive_rates, false_positive_rates, accuracies, sorted_model_outputs
+    return {'tprs': true_positive_rates, 'fprs': false_positive_rates, 'accuracies': accuracies, 'thresholds': sorted_model_outputs}
 
 
-def auroc(model_outputs, targets):
+def roc_curve(model_outputs, targets, strategy='ovo'):
+    """
+    Full multi-class roc-curve generator. TO-DO
+    """
+    
+    pass
+
+    #if model_outputs.shape[1] <= 2:
+    #    roc_curve = binary_roc_curve(model_outputs, targets)
+    #else:
+
+    #    # One vs one
+    #    if strategy == 'ovo':
+    #        roc_curves = []
+    #        for ii in range(0, model_outputs.shape[1]):
+    #            curves
+    #            for jj in range(0, ii):
+    #                roc_ii_jj = binary_roc_curve(model_outputs)
+    #                roc_curves.append()
+
+
+
+def plot_roc(roc_curve):
+    fig, ax = plt.subplots()
+    ax.plot(roc_curve['false_positive_rates'], roc_curve['true_positive_rates'])
+    ax.plot([0,1], [0,1], 'k--')
+    ax.set_xlabel('False Positive rate')
+    ax.set_ylabel('True Positive rate')
+    ax.set_title('ROC Curve')
+    plt.minorticks_on()
+    plt.grid(b=True, which='major')
+    plt.grid(b=True, which='minor', linestyle='--')
+    return fig, ax
+
+
+def binary_auroc(model_outputs, targets):
 
     # check input dimensions
-    model_outputs = check_1d_array(model_outputs)
-    targets = check_1d_array(targets)
+    model_outputs = cast_to_1d_array(model_outputs)
+    targets = cast_to_1d_array(targets)
 
      # Get the number of instances in each class
     classes, class_counts = np.unique(targets, return_counts=True)
@@ -175,25 +198,66 @@ def auroc(model_outputs, targets):
     return auroc
 
 
-def auroc_hand_till(model_output, targets):
+def vuroc_hand_till(model_output, targets):
+    """
+    Computes volume under the receiver operating characteristic curve for classification problems using the method of Hand and Till (2001).
+    """
 
-    if model_output.shape[0] != targets.shape[0]:
+    if model_output.shape != targets.shape:
         raise TypeError('Dimensions of predictions and targets must agree')
 
-    positive_class_indicies = np.arange(0, targets.shape[0])[targets == 1]
-    negative_class_indicies = np.arange(0, targets.shape[0])[targets == 0]
+    # if binary classification extend target vector to include negative class
+    if targets.ndim == 1:
+        targets = np.stack((targets, 1-targets), axis=1)
+        model_output = np.stack((model_output, 1-model_output), axis=1)
+    elif targets.shape[1] == 1:
+        targets = np.concatenate((targets, 1-targets), axis=1)
+        model_output = np.concatenate((model_output, 1-model_output), axis=1)
 
-    positive_class_count = positive_class_indicies.shape[0]
-    negative_class_count = negative_class_indicies.shape[0]
+    class_count = targets.shape[1]
+    pairwise_aurocs = np.zeros((targets.shape[1], targets.shape[1]))
+    pairwise_aurocs1 = np.zeros((targets.shape[1], targets.shape[1]))
 
-    adjusted_model_output = model_output.copy()
-    #adjusted_model_output[negative_class_indicies] = 1 - adjusted_model_output[negative_class_indicies]
+    for ii in range(0, class_count):
+        for jj in range(0, class_count):
 
-    sorted_outputs_indices = np.argsort(adjusted_model_output, axis=None)
-    sorted_outputs = adjusted_model_output[sorted_outputs_indices]
+            class_ii_mask = targets[:, ii] == 1
+            class_jj_mask = targets[:, jj] == 1
 
-    auroc = (np.sum(sorted_outputs_indices[positive_class_indicies] + 1) - positive_class_count*(positive_class_count + 1)/2)/positive_class_count/negative_class_count
-    return auroc
+            targets_ii_jj = targets[class_ii_mask | class_jj_mask, :]
+            sort_order = np.argsort(model_output[class_ii_mask | class_jj_mask, ii])
+
+            ranks = np.empty_like(sort_order)
+            ranks[sort_order] = np.arange(sort_order.size) + 1
+
+            class_ii_size = targets[class_ii_mask, :].shape[0]
+            class_jj_size = targets[class_jj_mask, :].shape[0]
+
+
+            """
+            Obtaining the sum of class ii ranks can be done by indexing with either targets[:, jj] == 0 (i.e. NOT class jj) or targets[:, ii] == 1 (class ii).
+            The off-diagonal elements (ii != jj) will be the same in both cases, but the diagonal elements (ii = jj) will be different, complementary values
+            depending on the case used (i.e. p vs 1-p). AUROC is obtained from the upper-triangular elements ii < jj, thus final computed AUROC is unaffected
+            by this choice.
+            
+            Considering the interpretation of the AUROC, the case ii = jj corresponds to computing the probability that a randomly selected member of class
+            jj = ii will be ranked lower than another randomly selected member of the same class (ii = jj). Theory: The two possible complementary results stems from
+            the arbitrary choice of which order to consider the two results?
+            """
+
+            pairwise_aurocs[ii, jj] = (np.sum(ranks[targets_ii_jj[:, ii] == 1]) - class_ii_size * (class_ii_size+1)/2)/class_ii_size/class_jj_size
+
+            #pairwise_aurocs[ii, jj] = (np.sum(ranks[targets[:, jj] == 0]) - class_ii_size * (class_ii_size+1)/2)/class_ii_size/class_jj_size
+
+            #pairwise_aurocs[ii, jj] = (np.sum(ranks[targets[:, ii] == 1]) - class_ii_size * (class_ii_size+1)/2)/class_ii_size/class_jj_size
+
+            #tmp = targets[sort_order, jj]
+            #pairwise_aurocs[ii, jj] = (np.sum(np.arange(tmp.size)[tmp == 0] + 1) - class_ii_size * (class_ii_size+1)/2)/class_ii_size/class_jj_size
+           
+    pairwise_aurocs = (pairwise_aurocs + pairwise_aurocs.transpose())/2
+    
+    return 2/class_count/(class_count - 1) * np.sum(np.triu(pairwise_aurocs, 1))
+
 
 
 def choose_threshold(tprs, fprs, accuracies, thresholds, tpr_select=-inf, fpr_select=inf):

@@ -1,6 +1,12 @@
 import numpy as np
 
 # Activation Functions
+def identity(input):
+    """Compute identity neuron activation """
+
+    return input
+
+
 def sigmoid(input):
     """Compute sigmoid neuron activation """
 
@@ -19,14 +25,24 @@ def relu(input):
 def softmax(input):
     """ Compute softmax neuron activation with numerical stability protection"""
 
-    exps = np.exp(input - np.max(input))
+    exps = np.exp(input - np.amax(input, axis=0))
     return exps/np.sum(exps, axis=0)
 
 
-ACTIVATIONS = {'sigmoid': sigmoid,'tanh': tanh, 'relu': relu, 'softmax': softmax}
+ACTIVATIONS = {'identity': identity,
+               'sigmoid': sigmoid,
+               'tanh': tanh,
+               'relu': relu,
+               'softmax': softmax}
 
 
 # Activation function derivatives
+def derivative_identity(identity_output):
+    """Compute derivative of identity function """
+
+    return np.ones(identity_output.shape)
+
+
 def derivative_sigmoid(sigmoid_output):
     """ Compute derivative of sigmoid function """
 
@@ -50,18 +66,25 @@ def derivative_relu(relu_output):
 
 def derivative_softmax(softmax_output):
     """ Compute softmax neuron activation """
-
     pass
 
 
-ACTIVATIONS_DERIVATIVES = {'sigmoid': derivative_sigmoid,'tanh': derivative_tanh, 'relu': derivative_relu, 'softmax': derivative_softmax}
+ACTIVATIONS_DERIVATIVES = {'identity': derivative_identity,
+                           'sigmoid': derivative_sigmoid,
+                           'tanh': derivative_tanh,
+                           'relu': derivative_relu,
+                           'softmax': derivative_softmax}
 
 
 # Cost functions
 def mean_square_error(model_output, target):
     """ Compute mean square error """
 
-    pass
+    if model_output.shape != target.shape:
+        raise ValueError('Dimensions of model output and target do not match')
+
+    return np.sum(np.square(target - model_output))/model_output.size/2
+
 
 def binary_cross_entropy(model_output, target):
     """ Compute binary cross-entropy cost """
@@ -97,9 +120,8 @@ COST_FUNCTION_SELECTION = {'identity': mean_square_error, 'sigmoid': 'binary_cro
 def derivative_mean_square_error(model_output, target):
     """ Compute derivative of mean square error cost function"""
 
-    pass
-
-def derivative_cross_entropy(model_output, target, output_derivative):
+    
+def derivative_cross_entropy(model_output, target):
     """ Compute derivative of cross-entropy cost function"""
 
     return model_output - target

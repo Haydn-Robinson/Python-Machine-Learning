@@ -6,6 +6,8 @@ setup(
     author='Haydn Robinson',
     package_dir={'':'src'},
     packages=find_packages(where='src'),
-    install_requires=['numpy'],
+    install_requires=['numpy',
+                      'pandas',
+                      'matplotlib'],
     extras_require={'test':['pytest']}
     )
