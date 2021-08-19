@@ -1,0 +1,140 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>d4f0ed68-a67b-46e2-85c7-59ea0e607ecd</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>scripts\moontest2d.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>hrpyml</Name>
+    <RootNamespace>hrpyml</RootNamespace>
+    <TestFramework>Pytest</TestFramework>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="scripts\learning_rate_test.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="setup.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\evaluate\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\evaluate\classifier.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\neuralnetwork\modelselection.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\neuralnetwork\network.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="unused\unimplementedshit.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\neuralnetwork\_functions.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\neuralnetwork\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="unused\dataprocessing.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\neuralnetwork\_stochasticoptimisers.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\utilities\preprocessing.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\utilities\helpers.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\utilities\split.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\utilities\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="src\hrpyml\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="scripts\debugging.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="scripts\moontest2d.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="scripts\nettest.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="scripts\winequality.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\unit_tests\conftest.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\unit_tests\htest_dataprocessing.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\unit_tests\htest_dataset.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\unit_tests\test_network.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="tests\unit_tests\test__functions.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="data\models\" />
+    <Folder Include="scripts\" />
+    <Folder Include="src\hrpyml\" />
+    <Folder Include="src\hrpyml\evaluate\" />
+    <Folder Include="src\hrpyml\neuralnetwork\" />
+    <Folder Include="unused\" />
+    <Folder Include="src\hrpyml\utilities\" />
+    <Folder Include="data\" />
+    <Folder Include="src\" />
+    <Folder Include="tests\" />
+    <Folder Include="tests\unit_tests\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LICENSE.txt" />
+    <Content Include="README.md" />
+    <Content Include="setup.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="..\env\">
+      <Id>env</Id>
+      <Version>3.9</Version>
+      <Description>env (Python 3.9 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>
