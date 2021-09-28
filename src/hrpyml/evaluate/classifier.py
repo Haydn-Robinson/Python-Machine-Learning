@@ -108,7 +108,7 @@ def binary_roc_curve(model_outputs, targets):
     false_positive_rates.append(false_positives/negatives_count)
     accuracies.append((true_positives + (negatives_count - false_positives))/model_outputs.size)
 
-    return {'tprs': true_positive_rates, 'fprs': false_positive_rates, 'accuracies': accuracies, 'thresholds': sorted_model_outputs}
+    return {'tprs': true_positive_rates, 'fprs': false_positive_rates, 'accuracies': accuracies, 'thresholds': sorted_model_outputs.tolist()}
 
 
 def roc_curve(model_outputs, targets, strategy='ovo'):
